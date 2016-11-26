@@ -1,11 +1,14 @@
 package pl.pb.r.kcksm.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Radosław Naruszewicz on 2016-11-26.
  * https://github.com/survivingwithandroid/Swa-app/tree/master/WeatherApp/src/com/survivingwithandroid/weatherapp
  */
 
-public class Weather {
+public class Weather implements Parcelable {
 
     public Location location;
     public CurrentCondition currentCondition = new CurrentCondition();
@@ -20,7 +23,6 @@ public class Weather {
         private String condition;
         private String descr;
         private String icon;
-
 
         private float pressure;
         private float humidity;
@@ -190,5 +192,106 @@ public class Weather {
 
     }
 
+    public Weather() {
+    }
 
+    protected Weather(Parcel in) {
+        /*Location*/
+        location.setLongitude(in.readFloat());
+        location.setLatitude(in.readFloat());
+
+        location.setCountry(in.readString());
+        location.setCity(in.readString());
+
+        location.setSunrise(in.readInt());
+        location.setSunset(in.readInt());
+        /*CurrentCondition*/
+        currentCondition.setPressure(in.readFloat());
+        currentCondition.setHumidity(in.readFloat());
+
+        currentCondition.setCondition(in.readString());
+        currentCondition.setDescr(in.readString());
+        currentCondition.setIcon(in.readString());
+
+        currentCondition.setWeatherId(in.readInt());
+        /*Temperature*/
+        temperature.setTemp(in.readFloat());
+        temperature.setMinTemp(in.readFloat());
+        temperature.setMaxTemp(in.readFloat());
+
+        /*Wind*/
+        wind.setSpeed(in.readFloat());
+        wind.setDeg(in.readFloat());
+
+        /*Rain*/
+        rain.setAmmount(in.readFloat());
+        rain.setTime(in.readString());
+
+        /*Snow*/
+        snow.setAmmount(in.readFloat());
+        snow.setTime(in.readString());
+
+        /*Clouds*/
+        clouds.setPerc(in.readInt());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        /*Location*/
+        dest.writeFloat(location.getLongitude());
+        dest.writeFloat(location.getLatitude());
+
+        dest.writeString(location.getCountry());
+        dest.writeString(location.getCity());
+
+        dest.writeInt(location.getSunrise());
+        dest.writeInt(location.getSunset());
+
+        /*CurrentCondition*/
+        dest.writeFloat(currentCondition.getPressure());
+        dest.writeFloat(currentCondition.getHumidity());
+
+        dest.writeString(currentCondition.getCondition());
+        dest.writeString(currentCondition.getDescr());
+        dest.writeString(currentCondition.getIcon());
+
+        dest.writeInt(currentCondition.getWeatherId());
+        /*Temperature*/
+        dest.writeFloat(temperature.getTemp());
+        dest.writeFloat(temperature.getMinTemp());
+        dest.writeFloat(temperature.getMaxTemp());
+
+        /*Wind*/
+        dest.writeFloat(wind.getSpeed());
+        dest.writeFloat(wind.getDeg());
+
+        /*Rain*/
+        dest.writeFloat(rain.getAmmount());
+        dest.writeString(rain.getTime());
+
+        /*Snow*/
+        dest.writeFloat(snow.getAmmount());
+        dest.writeString(snow.getTime());
+
+        /*Clouds*/
+        dest.writeInt(clouds.getPerc());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @SuppressWarnings("unused")
+    public static final Creator<Weather> CREATOR = new Creator<Weather>() {
+        @Override
+        public Weather createFromParcel(Parcel in) {
+            return new Weather(in);
+        }
+
+        @Override
+        public Weather[] newArray(int size) {
+            return new Weather[size];
+        }
+    };
 }

@@ -18,6 +18,8 @@ import pl.pb.r.kcksm.wheater.JSONWeatherParse;
 
 public class WheaterService extends IntentService {
 
+    public static final String ACTION_UPDATE_WEATHER = "ACTION_UPDATE_WEATHER";
+
     private Weather weather;
     private Map<String, Float> coordinate = new HashMap<String, Float>();
 

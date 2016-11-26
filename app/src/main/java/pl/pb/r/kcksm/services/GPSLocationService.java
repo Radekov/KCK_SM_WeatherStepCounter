@@ -2,6 +2,7 @@ package pl.pb.r.kcksm.services;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -15,12 +16,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-public class GPSLocationService extends Service{
+public class GPSLocationService extends IntentService {
     private static final String TAG = "LOCATION_GPS";
 
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
+
+    public GPSLocationService() {
+        super("GPSLocalizationService");
+    }
 
     private class LocationListener implements android.location.LocationListener{
         Location mLastLocation;
@@ -58,6 +63,11 @@ public class GPSLocationService extends Service{
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+
     }
 
     @Override
