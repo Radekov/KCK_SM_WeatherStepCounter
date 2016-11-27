@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">KCKSM</string>
+    <string name="stats">Statystyki</string>
+    <string name="sum_steps">Suma kroków</string>
 </resources>

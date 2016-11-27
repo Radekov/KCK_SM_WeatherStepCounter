@@ -15,40 +15,62 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Downloader;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
-import pl.pb.r.kcksm.http.WeatherHttpClient;
+import pl.pb.r.kcksm.activity.StatsActivity;
 import pl.pb.r.kcksm.listeners.CountStepListener;
 import pl.pb.r.kcksm.listeners.SensorStepListener;
-import pl.pb.r.kcksm.model.Weather;
+import pl.pb.r.kcksm.model.DaoSession;
+import pl.pb.r.kcksm.model.SumStep;
+import pl.pb.r.kcksm.model.SumStepDao;
+import pl.pb.r.kcksm.model.WeatherData;
 import pl.pb.r.kcksm.services.WheaterService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements CountStepListener, LocationListener {
 
     private SensorManager mSensorManager;
     private Sensor mSensorStepCounter;
 
-    public static final String EXTRA_WEATHER = "EXTRA_WEATHER";
-
     private LocationManager locationManager = null;
 
     private TextView mTVCounter;
     private TextView city;
     private TextView temperature;
-    private TextView latTV;
-    private TextView lonTV;
+    private TextView pressure;
+    private TextView humidity;
+    private TextView description;
     private ImageView imageView;
+
     private SensorEventListener mSensorListener;
+
+    private WeatherTask task;
+    private DaoSession daoSession;
+    private SumStepDao sumStepDao;
+
+    protected Toolbar toolbar;
+
+    public static final String EXTRA_WEATHER = "EXTRA_WEATHER";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        daoSession = ((App) getApplication()).getDaoSession();
 
         //TODO: przenieść do kontekstu aplikacji, wywalić by działało w tle - Service
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -62,15 +84,48 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
 
         //TODO Przenieść do fragmentu
         setContentView(R.layout.activity_main);
-        mTVCounter = (TextView) findViewById(R.id.tv_counter);
-        city = (TextView) findViewById(R.id.cityTView);
-        temperature = (TextView) findViewById(R.id.tempTView);
-        imageView = (ImageView) findViewById(R.id.imageView);
-        latTV = (TextView) findViewById(R.id.tv_lat);
-        lonTV = (TextView) findViewById(R.id.tv_lon);
+        setToolbar();
+        setUpViews();
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        Map<String,Float> c = new HashMap<>();
+        c.put("lon",22.455217f);
+        c.put("lat",53.6471559f);
+        task = new WeatherTask();
+        task.execute(c);
+    }
 
+    protected void setUpViews(){
+        mTVCounter = (TextView) findViewById(R.id.tv_counter);
+        city = (TextView) findViewById(R.id.tv_city);
+        temperature = (TextView) findViewById(R.id.tv_temperature);
+        pressure = (TextView) findViewById(R.id.tv_pressure);
+        humidity = (TextView) findViewById(R.id.tv_humidity);
+        description = (TextView) findViewById(R.id.tv_description);
+        imageView = (ImageView) findViewById(R.id.imageView);
+    }
+    protected void setToolbar(){
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        toolbar.inflateMenu(R.menu.actions);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.stats:
+                Intent intent = new Intent(this, StatsActivity.class);
+                startActivity(intent);
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void createmSensorListener() {
@@ -91,6 +146,9 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         IntentFilter f=new IntentFilter(WheaterService.ACTION_UPDATE_WEATHER);
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(onEvent, f);
+
+        //Intent i = new Intent(this, WheaterService.class);
+        //startService(i);
     }
 
     @Override
@@ -99,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         //mSensorManager.unregisterListener(mSensorListener);
         //mSensorListener = null;
         locationManager.removeUpdates(this);
-        
+
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(onEvent);
     }
@@ -107,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(task != null) task.cancel(false);
     }
 
     @Override
@@ -116,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
 
     @Override
     public void onLocationChanged(Location location) {
-        latTV.setText(Double.toString(location.getLatitude()));
         //task.doInBackground(coordinate);
     }
 
@@ -140,22 +198,84 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
+            Log.d("BroadcastReceiver",action);
+
             switch (action) {
                 case WheaterService.ACTION_UPDATE_WEATHER:
-                    updateView(intent.getParcelableExtra(EXTRA_WEATHER));
+                    //updateView(intent.getParcelableExtra(EXTRA_WEATHER));
                     break;
             }
         }
     };
 
-    private void updateView(Parcelable p) {
-        Weather weather = (Weather) p;
-        Picasso.with(MainActivity.this).load(WeatherHttpClient.getImgUrl(weather.currentCondition.getIcon())).into(imageView);
-        city.setText(weather.location.getCity() + "," + weather.location.getCountry());
-        temperature.setText(weather.temperature.getTemp() + "C");
+    private void updateView(WeatherData wd) {
+        city.setText(wd.name+","+wd.sys.country);
+        description.setText(wd.weather.get(0).description);
+        temperature.setText(Float.toString(wd.main.temp));
+        pressure.setText(Float.toString(wd.main.pressure));
+        humidity.setText(Integer.toString(wd.main.humidity));
 
 
+        Picasso.with(MainActivity.this)
+                .load(String.format(
+                        Locale.US,
+                        WheaterService.IMG_URL,
+                        wd.weather.get(0).icon))
+                .into(imageView);
     }
+
+    private class WeatherTask extends AsyncTask<Map<String,Float>,Void,WeatherData>{
+        WeatherData result = null;
+        @Override
+        protected WeatherData doInBackground(Map<String, Float>... params) {
+            Map<String,Float> coord = params[0];
+            Call<WeatherData> call = WheaterService.getActuallWeatherData(
+                    coord.get("lon"), coord.get("lat")
+            );
+            call.enqueue(new Callback<WeatherData>() {
+                @Override
+                public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
+                    result = response.body();
+
+                    sumStepDao = daoSession.getSumStepDao();
+                    String description = result.weather.get(0).description;
+                    SumStep obj = null;
+                    try{
+                        obj = sumStepDao.queryBuilder()
+                                .where(
+                                        SumStepDao.Properties.Weather.eq(
+                                                description)
+                                )
+                                .unique();
+                    }
+                    catch (Exception ex){
+                        obj = new SumStep();
+                        obj.setWeather(description);
+                        obj.setSteps(0);
+                        sumStepDao.insert(obj);
+                    }
+
+                    updateView(response.body());
+                }
+
+                @Override
+                public void onFailure(Call<WeatherData> call, Throwable t) {
+
+                }
+            });
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(WeatherData weatherData) {
+            super.onPostExecute(weatherData);
+            if(weatherData == null) return;
+            updateView(weatherData);
+
+        }
+    }
+
 }
 
 //TODO Zapisać tekst licznika do Bundle

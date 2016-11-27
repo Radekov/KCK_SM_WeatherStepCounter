@@ -10,12 +10,17 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        <!-- android:theme="@style/AppTheme" -->
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,8 +28,8 @@
             </intent-filter>
         </activity>
         <!--
- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+ATTENTION: This was auto-generated to add Google Play services to your project for
+ App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
         -->
         <meta-data
             android:name="com.google.android.gms.version"
@@ -37,7 +42,9 @@
         <service
             android:name=".services.GPSLocationService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".activity.StatsActivity"></activity>
     </application>
 
 </manifest>
