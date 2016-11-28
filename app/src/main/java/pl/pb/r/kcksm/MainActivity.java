@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
             mSensorListener = new SensorStepListener();
             ((SensorStepListener) mSensorListener).addListener(this);
         }
+
     }
 
     @Override
@@ -176,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
 
         try {
             //TODO do zmiany
-            SumStepsDaoService.getInstance().updateSumStep(count);
+            SumStepsDaoService.getInstance().updateSumStep(1);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -252,6 +253,8 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
                     SumStep actuallStep = null;
                     try {
                         actuallStep = SumStepsDaoService.getInstance().setActuallWeather(result);
+                        //TODO do zmiany
+                        ((SensorStepListener)mSensorListener).setCounter(actuallStep.getSteps());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -13,11 +13,11 @@ import java.util.List;
 
 public class SensorStepListener implements SensorEventListener {
     private List<CountStepListener> listeners = new ArrayList<CountStepListener>();
-    private float counter = 0;
+    private Integer counter = 0;
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        counter += event.values[0];
+        counter += (int)event.values[0];
         for(CountStepListener l : listeners){
             l.countStep((int)counter);
         }
@@ -32,7 +32,11 @@ public class SensorStepListener implements SensorEventListener {
         listeners.add(toAdd);
     }
 
-    public float getCounter() {
+    public Integer getCounter() {
         return counter;
+    }
+
+    public void setCounter(Integer counter) {
+        this.counter = counter;
     }
 }
