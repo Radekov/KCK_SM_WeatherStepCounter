@@ -19,7 +19,7 @@ public class SensorStepListener implements SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
         counter += event.values[0];
         for(CountStepListener l : listeners){
-            l.countStep(counter);
+            l.countStep((int)counter);
         }
     }
 

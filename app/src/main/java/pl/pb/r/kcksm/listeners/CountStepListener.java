@@ -5,5 +5,5 @@ package pl.pb.r.kcksm.listeners;
  */
 
 public interface CountStepListener {
-    void countStep(float count);
+    String countStep(Integer count);
 }

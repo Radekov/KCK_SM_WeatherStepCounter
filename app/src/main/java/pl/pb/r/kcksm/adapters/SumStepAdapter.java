@@ -7,10 +7,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import org.greenrobot.greendao.annotation.NotNull;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import pl.pb.r.kcksm.R;
 import pl.pb.r.kcksm.model.SumStep;
+import pl.pb.r.kcksm.services.WheaterService;
 
 /**
  * Created by Radosław Naruszewicz on 2016-11-27.
@@ -33,6 +40,10 @@ public class SumStepAdapter extends RecyclerView.Adapter<SumStepAdapter.SumStepV
         }
     }
 
+    public SumStepAdapter() {
+        this.dataset = new ArrayList<>();
+    }
+
     @Override
     public SumStepAdapter.SumStepViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -43,8 +54,14 @@ public class SumStepAdapter extends RecyclerView.Adapter<SumStepAdapter.SumStepV
     @Override
     public void onBindViewHolder(SumStepViewHolder holder, int position) {
         SumStep sumStep = dataset.get(position);
-        holder.tvSumStepWeather.setText(sumStep.getWeather());
-        holder.tvSumStepWeather.setText(sumStep.getSteps());
+        holder.tvDescribeWeather.setText(sumStep.getWeather());
+        holder.tvSumStepWeather.setText(Integer.toString(sumStep.getSteps()));
+        Picasso.with(holder.ivPictureWeather.getContext())
+                .load(String.format(
+                        Locale.US,
+                        WheaterService.IMG_URL,
+                        sumStep.getIco()))
+                .into(holder.ivPictureWeather);
 
         //TODO przemyśleć jak wyświetlać obrazek
 //        switch (sumStep.getWeather()){
@@ -55,5 +72,10 @@ public class SumStepAdapter extends RecyclerView.Adapter<SumStepAdapter.SumStepV
     @Override
     public int getItemCount() {
         return dataset.size();
+    }
+
+    public void setSumSteps(@NotNull List<SumStep> sumSteps){
+        dataset = sumSteps;
+        //notifyDataSetChanged();
     }
 }

@@ -12,7 +12,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -35,6 +34,7 @@ import pl.pb.r.kcksm.model.DaoSession;
 import pl.pb.r.kcksm.model.SumStep;
 import pl.pb.r.kcksm.model.SumStepDao;
 import pl.pb.r.kcksm.model.WeatherData;
+import pl.pb.r.kcksm.services.SumStepsDaoService;
 import pl.pb.r.kcksm.services.WheaterService;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -88,14 +88,14 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         setUpViews();
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Map<String,Float> c = new HashMap<>();
-        c.put("lon",22.455217f);
-        c.put("lat",53.6471559f);
+        Map<String, Float> c = new HashMap<>();
+        c.put("lon", 22.455217f);
+        c.put("lat", 53.6471559f);
         task = new WeatherTask();
         task.execute(c);
     }
 
-    protected void setUpViews(){
+    protected void setUpViews() {
         mTVCounter = (TextView) findViewById(R.id.tv_counter);
         city = (TextView) findViewById(R.id.tv_city);
         temperature = (TextView) findViewById(R.id.tv_temperature);
@@ -104,8 +104,9 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         description = (TextView) findViewById(R.id.tv_description);
         imageView = (ImageView) findViewById(R.id.imageView);
     }
-    protected void setToolbar(){
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+
+    protected void setToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
@@ -143,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         mSensorManager.registerListener(mSensorListener, mSensorStepCounter, SensorManager.SENSOR_DELAY_UI);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 
-        IntentFilter f=new IntentFilter(WheaterService.ACTION_UPDATE_WEATHER);
+        IntentFilter f = new IntentFilter(WheaterService.ACTION_UPDATE_WEATHER);
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(onEvent, f);
 
@@ -165,12 +166,21 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(task != null) task.cancel(false);
+        if (task != null) task.cancel(false);
     }
 
     @Override
-    public void countStep(float count) {
-        mTVCounter.setText(String.valueOf(count));
+    public String countStep(Integer count) {
+        String result = String.valueOf(count);
+        mTVCounter.setText(result);
+
+        try {
+            //TODO do zmiany
+            SumStepsDaoService.getInstance().updateSumStep(count);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @Override
@@ -198,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            Log.d("BroadcastReceiver",action);
+            Log.d("BroadcastReceiver", action);
 
             switch (action) {
                 case WheaterService.ACTION_UPDATE_WEATHER:
@@ -208,8 +218,10 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         }
     };
 
-    private void updateView(WeatherData wd) {
-        city.setText(wd.name+","+wd.sys.country);
+    private void updateView(WeatherData wd, String steps) {
+        mTVCounter.setText(steps);
+
+        city.setText(wd.name + "," + wd.sys.country);
         description.setText(wd.weather.get(0).description);
         temperature.setText(Float.toString(wd.main.temp));
         pressure.setText(Float.toString(wd.main.pressure));
@@ -224,11 +236,12 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
                 .into(imageView);
     }
 
-    private class WeatherTask extends AsyncTask<Map<String,Float>,Void,WeatherData>{
+    private class WeatherTask extends AsyncTask<Map<String, Float>, Void, WeatherData> {
         WeatherData result = null;
+
         @Override
         protected WeatherData doInBackground(Map<String, Float>... params) {
-            Map<String,Float> coord = params[0];
+            Map<String, Float> coord = params[0];
             Call<WeatherData> call = WheaterService.getActuallWeatherData(
                     coord.get("lon"), coord.get("lat")
             );
@@ -236,26 +249,13 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
                 @Override
                 public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
                     result = response.body();
-
-                    sumStepDao = daoSession.getSumStepDao();
-                    String description = result.weather.get(0).description;
-                    SumStep obj = null;
-                    try{
-                        obj = sumStepDao.queryBuilder()
-                                .where(
-                                        SumStepDao.Properties.Weather.eq(
-                                                description)
-                                )
-                                .unique();
+                    SumStep actuallStep = null;
+                    try {
+                        actuallStep = SumStepsDaoService.getInstance().setActuallWeather(result);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    catch (Exception ex){
-                        obj = new SumStep();
-                        obj.setWeather(description);
-                        obj.setSteps(0);
-                        sumStepDao.insert(obj);
-                    }
-
-                    updateView(response.body());
+                    updateView(response.body(), String.valueOf(actuallStep.getSteps()));
                 }
 
                 @Override
@@ -270,8 +270,8 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         @Override
         protected void onPostExecute(WeatherData weatherData) {
             super.onPostExecute(weatherData);
-            if(weatherData == null) return;
-            updateView(weatherData);
+            if (weatherData == null) return;
+            //updateView(weatherData);
 
         }
     }
