@@ -1,4 +1,4 @@
-package pl.pb.r.kcksm;
+package pl.pb.r.kcksm.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,7 +27,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import pl.pb.r.kcksm.activity.StatsActivity;
+import pl.pb.r.kcksm.App;
+import pl.pb.r.kcksm.R;
 import pl.pb.r.kcksm.listeners.CountStepListener;
 import pl.pb.r.kcksm.listeners.SensorStepListener;
 import pl.pb.r.kcksm.model.DaoSession;
@@ -35,7 +36,7 @@ import pl.pb.r.kcksm.model.SumStep;
 import pl.pb.r.kcksm.model.SumStepDao;
 import pl.pb.r.kcksm.model.WeatherData;
 import pl.pb.r.kcksm.services.SumStepsDaoService;
-import pl.pb.r.kcksm.services.WheaterService;
+import pl.pb.r.kcksm.services.WeatherService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -123,7 +124,10 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
             case R.id.stats:
                 Intent intent = new Intent(this, StatsActivity.class);
                 startActivity(intent);
-
+                break;
+            case R.id.forecast:
+                intent = new Intent(this, WeatherCityActivity.class);
+                startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -145,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         mSensorManager.registerListener(mSensorListener, mSensorStepCounter, SensorManager.SENSOR_DELAY_UI);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
 
-        IntentFilter f = new IntentFilter(WheaterService.ACTION_UPDATE_WEATHER);
+        IntentFilter f = new IntentFilter(WeatherService.ACTION_UPDATE_WEATHER);
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(onEvent, f);
 
@@ -212,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
             Log.d("BroadcastReceiver", action);
 
             switch (action) {
-                case WheaterService.ACTION_UPDATE_WEATHER:
+                case WeatherService.ACTION_UPDATE_WEATHER:
                     //updateView(intent.getParcelableExtra(EXTRA_WEATHER));
                     break;
             }
@@ -232,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         Picasso.with(MainActivity.this)
                 .load(String.format(
                         Locale.US,
-                        WheaterService.IMG_URL,
+                        WeatherService.IMG_URL,
                         wd.weather.get(0).icon))
                 .into(imageView);
     }
@@ -243,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         @Override
         protected WeatherData doInBackground(Map<String, Float>... params) {
             Map<String, Float> coord = params[0];
-            Call<WeatherData> call = WheaterService.getActuallWeatherData(
+            Call<WeatherData> call = WeatherService.getActuallWeatherData(
                     coord.get("lon"), coord.get("lat")
             );
             call.enqueue(new Callback<WeatherData>() {

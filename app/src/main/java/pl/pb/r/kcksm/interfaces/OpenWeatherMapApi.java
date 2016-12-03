@@ -1,5 +1,6 @@
 package pl.pb.r.kcksm.interfaces;
 
+import pl.pb.r.kcksm.model.ForecastData;
 import pl.pb.r.kcksm.model.WeatherData;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -16,4 +17,9 @@ public interface OpenWeatherMapApi {
                                      @Query("lon") float lon,
                                      @Query("lang") String lang,
                                      @Query("APPID") String appid);
+
+    @GET("forecast?units=metric")
+    Call<ForecastData> getForecastCity(@Query("q") String city,
+                                       @Query("lang") String lang,
+                                       @Query("APPID") String appid);
 }

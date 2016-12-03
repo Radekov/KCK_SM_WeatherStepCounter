@@ -1,16 +1,10 @@
 package pl.pb.r.kcksm.services;
 
-import android.content.Context;
-
-import org.greenrobot.greendao.query.Query;
-import org.greenrobot.greendao.query.WhereCondition;
-
 import pl.pb.r.kcksm.App;
 import pl.pb.r.kcksm.model.SumStep;
 import pl.pb.r.kcksm.model.SumStepDao;
 import pl.pb.r.kcksm.model.WeatherData;
-
-import static java.security.AccessController.getContext;
+import pl.pb.r.kcksm.model.weather.Weather;
 
 /**
  * Created by Radosław Naruszewicz on 2016-11-28.
@@ -20,7 +14,7 @@ public class SumStepsDaoService {
 
     private SumStepDao sumStepDao;
     private static SumStepsDaoService INSTANCE;
-    private WeatherData.Weather actuallWeather = null;
+    private Weather actuallWeather = null;
 
     private SumStepsDaoService(App app){
         sumStepDao =  app.getDaoSession().getSumStepDao();
@@ -57,7 +51,7 @@ public class SumStepsDaoService {
         return findAndUpdateSumStep(actuallWeather,countSteps);
     }
 
-    public SumStep findAndUpdateSumStep(WeatherData.Weather w, Integer countSteps){
+    public SumStep findAndUpdateSumStep(Weather w, Integer countSteps){
         actuallWeather = w;
         String description = actuallWeather.description;
         String icon = actuallWeather.icon;

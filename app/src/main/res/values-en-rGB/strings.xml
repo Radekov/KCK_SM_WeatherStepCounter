@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">KCKSM</string>
+    <string name="stats">Stats</string>
+    <string name="sum_steps">Sum steps</string>
+    <string name="search_forecast_hint">City</string>
+
+</resources>

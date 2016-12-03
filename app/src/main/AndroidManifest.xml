@@ -19,7 +19,7 @@
 
         <!-- android:theme="@style/AppTheme" -->
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +36,7 @@ ATTENTION: This was auto-generated to add Google Play services to your project f
             android:value="@integer/google_play_services_version" />
 
         <service
-            android:name=".services.WheaterService"
+            android:name=".services.WeatherService"
             android:enabled="true"
             android:exported="true" />
         <service
@@ -44,7 +44,8 @@ ATTENTION: This was auto-generated to add Google Play services to your project f
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".activity.StatsActivity"></activity>
+        <activity android:name=".activity.StatsActivity" />
+        <activity android:name=".activity.WeatherCityActivity"></activity>
     </application>
 
 </manifest>

@@ -9,7 +9,8 @@ import org.greenrobot.greendao.annotation.Unique;
 /**
  * Created by Radosław Naruszewicz on 2016-11-27.
  */
-
+//https://openweathermap.org/weather-conditions
+    //TODO dla tych id zrobić wielkiego switcha?
 @Entity(
         generateConstructors = true,
         generateGettersSetters = true

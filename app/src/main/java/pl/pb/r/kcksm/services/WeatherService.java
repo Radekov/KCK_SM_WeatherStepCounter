@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pl.pb.r.kcksm.interfaces.OpenWeatherMapApi;
+import pl.pb.r.kcksm.model.ForecastData;
 import pl.pb.r.kcksm.model.WeatherData;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -16,7 +17,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class WheaterService extends IntentService {
+public class WeatherService extends IntentService {
 
     public final static String BASE_URL = "http://api.openweathermap.org/data/2.5/";
     public static String IMG_URL = "http://openweathermap.org/img/w/%s.png";
@@ -33,8 +34,48 @@ public class WheaterService extends IntentService {
     private static Retrofit retrofit = getRetrofitInstance();
     private static OpenWeatherMapApi weatherApi = getOpenWeatherApiInstance();
 
-    public WheaterService() {
-        super("WheaterService");
+    private static Retrofit getRetrofitInstance() {
+        if (retrofit == null)
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        return retrofit;
+    }
+
+    private static OpenWeatherMapApi getOpenWeatherApiInstance() {
+        if (weatherApi == null)
+            weatherApi = getRetrofitInstance().create(OpenWeatherMapApi.class);
+        return weatherApi;
+    }
+
+    private boolean sendWeather(WeatherData w) {
+        Intent intent = new Intent("NewWeather");
+        //intent.putExtra(MainActivity.EXTRA_WEATHER,w);
+        //sendBroadcast(intent2);
+        return LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    public WeatherService() {
+        super("WeatherService");
+    }
+
+    //TMP zastąpić aby serwis za to odpowiadał a nie jego statyczna metoda
+    public static Call<WeatherData> getActuallWeatherData(float lon, float lat) {
+        Call<WeatherData> call = getOpenWeatherApiInstance().getWeatherCity(lat,
+                lon,
+                "pl",
+                API_KEY);
+        return call;
+    }
+
+    //TMP możliwe, że przenieść nawet do oddzielnego serwisu
+    public static Call<ForecastData> getForecastData(String city) {
+        Call<ForecastData> call = getOpenWeatherApiInstance().getForecastCity(
+                city,
+                "pl",
+                API_KEY);
+        return call;
     }
 
     @Override
@@ -92,32 +133,5 @@ public class WheaterService extends IntentService {
         return null;
     }
 
-    private boolean sendWeather(WeatherData w) {
-        Intent intent = new Intent("NewWeather");
-        //intent.putExtra(MainActivity.EXTRA_WEATHER,w);
-        //sendBroadcast(intent2);
-        return LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
 
-    private static Retrofit getRetrofitInstance() {
-        if (retrofit == null)
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-        return retrofit;
-    }
-    private static OpenWeatherMapApi getOpenWeatherApiInstance(){
-        if(weatherApi == null)
-            weatherApi = getRetrofitInstance().create(OpenWeatherMapApi.class);
-        return weatherApi;
-    }
-
-    public static Call<WeatherData> getActuallWeatherData(float lon, float lat){
-        Call<WeatherData> call = getOpenWeatherApiInstance().getWeatherCity(lat,
-                lon,
-                "pl",
-                API_KEY);
-        return call;
-    }
 }

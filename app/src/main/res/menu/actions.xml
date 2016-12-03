@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_action_stats"
         tools:showAsAction="ifRoom"
         android:title=""/>
+    <item
+        android:id="@+id/forecast"
+        android:icon="@android:drawable/ic_menu_gallery"
+        tools:showAsAction="ifRoom"
+        android:title=""/>
 </menu>

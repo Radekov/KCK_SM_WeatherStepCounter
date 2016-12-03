@@ -1,5 +1,12 @@
 <resources>
-    <string name="app_name">KCKSM</string>
+    <string name="app_name" translatable="false">KCKSM</string>
     <string name="stats">Statystyki</string>
     <string name="sum_steps">Suma kroków</string>
+
+    <string name="search_forecast_hint">Wpisz miasto</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
 </resources>
