@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">KCKSM</string>
     <string name="search_forecast_hint">Wpisz miasto</string>
     <string name="stats">Statystyki</string>
     <string name="sum_steps">Suma kroków</string>

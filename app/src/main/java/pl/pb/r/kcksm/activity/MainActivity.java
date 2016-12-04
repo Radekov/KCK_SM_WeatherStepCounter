@@ -127,6 +127,9 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
                 break;
             case R.id.forecast:
                 intent = new Intent(this, WeatherCityActivity.class);
+                String cityCountry = city.getText().toString();
+                String extra = cityCountry.substring(0, cityCountry.indexOf(','));
+                intent.putExtra(WeatherCityActivity.EXTRA_CITY,extra);
                 startActivity(intent);
         }
 

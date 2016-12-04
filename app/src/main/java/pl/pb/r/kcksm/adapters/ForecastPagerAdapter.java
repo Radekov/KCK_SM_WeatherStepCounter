@@ -1,8 +1,11 @@
 package pl.pb.r.kcksm.adapters;
 
+import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,9 +14,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
-import pl.pb.r.kcksm.model.DayForecastModel;
-import pl.pb.r.kcksm.model.ForecastData;
+import pl.pb.r.kcksm.R;
+import pl.pb.r.kcksm.model.weather.Day;
 
 /**
  * Created by Radosław Naruszewicz on 2016-12-03.
@@ -21,44 +25,34 @@ import pl.pb.r.kcksm.model.ForecastData;
 
 public class ForecastPagerAdapter extends PagerAdapter {
 
-    List<DayForecastModel> dayWeathers;
+    private static String deggreC = (char) 0x00B0 + "C";
 
-    public ForecastPagerAdapter(List<ForecastData.List> dayWeathers) {
+    List<Day> dayWeathers;
+    private Context mContext;
+
+    private TextView mDay;
+    private TextView mPressure;
+    private TextView mHumidity;
+    private TextView mDescription;
+    private TextView mIcon;
+    private TextView mWindSpeed;
+    private TextView mWindDeg;
+    private TextView mClouds;
+
+    //FIXME
+    private TextView mTempMor;
+//    private TextView mIconMor;
+    private TextView mTempDay;
+//    private TextView mIconDay;
+    private TextView mTempEve;
+//    private TextView mIconEve;
+    private TextView mTempNig;
+//    private TextView mIconNig;
+
+    public ForecastPagerAdapter(List<Day> dayWeathers, Context context) {
         super();
-        this.dayWeathers = new ArrayList<>();
-        //dayWeathers.get(0).dtTxt;
-
-        Date parsed = new Date();
-        Calendar calendar = GregorianCalendar.getInstance();
-        try {
-            SimpleDateFormat format =
-                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            parsed = format.parse(dayWeathers.get(0).dtTxt);
-            calendar.setTime(parsed);
-        } catch (ParseException pe) {
-            throw new IllegalArgumentException();
-        }
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-
-        int firstDay = 8 - hour / 3;
-        DayForecastModel model = new DayForecastModel();
-
-        //FIXME Czy może lepiej sprawdzać po godzinie -- kolejny problem narzut tego długiego stringa na godzinę
-        //TODO znaleźć inne rozwiązanie tego poniżej
-        //this.dayWeather.size() - count ViewPager
-        //this.dayWeather.get(x).size() - count row in RecyclerView
-        for(int i = 0; i<firstDay;i++)
-            model.weathers.add(dayWeathers.get(i));
-        this.dayWeathers.add(model);
-        model = new DayForecastModel();
-        for(int i = firstDay; i<dayWeathers.size();i++){
-            if(model.weathers.size() == 8){
-                this.dayWeathers.add(model);
-                model = new DayForecastModel();
-            }
-            model.weathers.add(dayWeathers.get(i));
-        }
-        this.dayWeathers.add(model);
+        this.dayWeathers = dayWeathers;
+        this.mContext = context;
     }
 
     @Override
@@ -67,7 +61,69 @@ public class ForecastPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
-        return false;
+    public boolean isViewFromObject(View view, Object o) {
+        return o==view;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Day day = dayWeathers.get(position);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.row_weather_city, container, false);
+        setUpViews(layout);
+        fillViews(dayWeathers.get(position));
+        container.addView(layout);
+//        return super.instantiateItem(container, position);
+        return layout;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        container.removeView((View) object);
+    }
+
+    private void setUpViews(ViewGroup v){
+        mDay = (TextView)v.findViewById(R.id.forecastDay);
+        mPressure = (TextView)v.findViewById(R.id.forecastPressure);
+        mHumidity = (TextView)v.findViewById(R.id.forecastHumidity);
+        mDescription = (TextView)v.findViewById(R.id.forecastDescription);
+        mIcon = (TextView)v.findViewById(R.id.forecastIcon);
+        mWindSpeed = (TextView)v.findViewById(R.id.forecastWindSpeed);
+        mWindDeg = (TextView)v.findViewById(R.id.forecastWindDeg);
+        mClouds = (TextView)v.findViewById(R.id.forecastClouds);
+
+        mTempMor = (TextView)v.findViewById(R.id.forecastTempMor);
+//        mIconMor = (TextView)v.findViewById(R.id.forecastIconMor);
+        mTempDay = (TextView)v.findViewById(R.id.forecastTempDay);
+//        mIconDay = (TextView)v.findViewById(R.id.forecastIconDay);
+        mTempEve = (TextView)v.findViewById(R.id.forecastTempEve);
+//        mIconEve = (TextView)v.findViewById(R.id.forecastIconEve);
+        mTempNig = (TextView)v.findViewById(R.id.forecastTempNig);
+//        mIconNig = (TextView)v.findViewById(R.id.forecastIconNig);
+    }
+
+    //TODO Multi language
+    private void fillViews(Day day){
+        mDay.setText(setTime(day.dt));
+        mPressure.setText(day.pressure + "hPa");
+        mHumidity.setText(day.humidity+"%");
+        mDescription.setText(day.weather.get(0).description);
+        //
+        mIcon.setText(day.weather.get(0).icon);
+        mWindSpeed.setText(day.speed +"m/s");
+        mWindDeg.setText(day.deg+(char) 0x00B0+"");
+        mClouds.setText(day.clouds+"%");
+
+        mTempMor.setText(day.temp.morn+deggreC);
+        mTempDay.setText(day.temp.day+deggreC);
+        mTempEve.setText(day.temp.eve+deggreC);
+        mTempNig.setText(day.temp.night+deggreC);
+    }
+
+    private String setTime(int time){
+        Calendar calendar = new GregorianCalendar(new Locale("pl","PL"));
+        calendar.setTimeInMillis(time);
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd.MM.yyyy", new Locale("pl","PL"));
+        return sdf.format(calendar.getTime());
     }
 }

@@ -18,7 +18,7 @@ public interface OpenWeatherMapApi {
                                      @Query("lang") String lang,
                                      @Query("APPID") String appid);
 
-    @GET("forecast?units=metric")
+    @GET("forecast/daily?units=metric")
     Call<ForecastData> getForecastCity(@Query("q") String city,
                                        @Query("lang") String lang,
                                        @Query("APPID") String appid);

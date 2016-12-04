@@ -29,8 +29,4 @@ public class Main {
 //    @SerializedName("grnd_level")
 //    @Expose
 //    public Float grndLevel;
-//  Dla Forecast - zbędne, jeżeli będzie potrzebne dziedziczyć po tej klasie i dodać poniższe pole
-//    @SerializedName("temp_kf")
-//    @Expose
-//    public Integer tempKf;
 }

@@ -25,7 +25,4 @@ public class City {
     @SerializedName("population")
     @Expose
     public Integer population;
-    @SerializedName("sys")
-    @Expose
-    public ForecastData.Sys sys;
 }
