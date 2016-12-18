@@ -1,7 +1,9 @@
 package pl.pb.r.kcksm.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,8 @@ import pl.pb.r.kcksm.model.weather.Day;
  */
 
 public class ForecastPagerAdapter extends PagerAdapter {
+
+    private Typeface weatherFont;
 
     private static String deggreC = (char) 0x00B0 + "C";
 
@@ -53,6 +57,7 @@ public class ForecastPagerAdapter extends PagerAdapter {
         super();
         this.dayWeathers = dayWeathers;
         this.mContext = context;
+        this.weatherFont = Typeface.createFromAsset(context.getAssets(), "fonts/weathericons.ttf");
     }
 
     @Override
@@ -120,10 +125,11 @@ public class ForecastPagerAdapter extends PagerAdapter {
         mTempNig.setText(day.temp.night+deggreC);
     }
 
-    private String setTime(int time){
+    private String setTime(long time){
         Calendar calendar = new GregorianCalendar(new Locale("pl","PL"));
-        calendar.setTimeInMillis(time);
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd.MM.yyyy", new Locale("pl","PL"));
-        return sdf.format(calendar.getTime());
+        calendar.setTimeInMillis(time*1000L);
+        Date date = new Date(time);
+        SimpleDateFormat sdf = new SimpleDateFormat("E MMMM dd.MM.yyyy", new Locale("pl","PL"));
+        return sdf.format(calendar.getTimeInMillis());
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 public class Day {
     @SerializedName("dt")
     @Expose
-    public Integer dt;
+    public Long dt;
     @SerializedName("temp")
     @Expose
     public Temp temp;

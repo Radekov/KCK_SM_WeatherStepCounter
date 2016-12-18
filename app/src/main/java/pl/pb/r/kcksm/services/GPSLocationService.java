@@ -16,16 +16,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-public class GPSLocationService extends IntentService {
+public class GPSLocationService extends Service {
     private static final String TAG = "LOCATION_GPS";
 
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 10f;
 
-    public GPSLocationService() {
-        super("GPSLocalizationService");
-    }
+//    public GPSLocationService() {
+//        super("GPSLocalizationService");
+//    }
 
     private class LocationListener implements android.location.LocationListener{
         Location mLastLocation;
@@ -35,22 +35,24 @@ public class GPSLocationService extends IntentService {
 
         @Override
         public void onLocationChanged(Location location) {
+            Log.d("GPSLocationService", "onLocationChanged()");
             mLastLocation.set(location);
+            Intent i = new Intent(getApplicationContext(),WeatherService.class);
+            i.putExtra(WeatherService.EXTRA_LONGITUDE, (float)mLastLocation.getLongitude());
+            i.putExtra(WeatherService.EXTRA_LATITUDE, (float)mLastLocation.getLatitude());
+            startService(i);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
         }
     }
 
@@ -66,13 +68,7 @@ public class GPSLocationService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
+    public int onStartCommand(Intent intent, int flags, int startId){
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -81,6 +77,7 @@ public class GPSLocationService extends IntentService {
     public void onCreate()
     {
         initializeLocationManager();
+        Log.d("GPSLocationService", "onCreate()");
         try {
             mLocationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
