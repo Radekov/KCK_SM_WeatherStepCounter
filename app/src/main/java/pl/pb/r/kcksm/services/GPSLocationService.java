@@ -38,6 +38,7 @@ public class GPSLocationService extends Service {
             Log.d("GPSLocationService", "onLocationChanged()");
             mLastLocation.set(location);
             Intent i = new Intent(getApplicationContext(),WeatherService.class);
+            i.setAction(WeatherService.ACTION_UPDATE_LOCALIZATION_WEATHER);
             i.putExtra(WeatherService.EXTRA_LONGITUDE, (float)mLastLocation.getLongitude());
             i.putExtra(WeatherService.EXTRA_LATITUDE, (float)mLastLocation.getLatitude());
             startService(i);

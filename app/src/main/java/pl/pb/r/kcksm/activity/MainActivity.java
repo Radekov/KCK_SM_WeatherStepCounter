@@ -150,12 +150,6 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        if (task != null) task.cancel(false);
-    }
-
-    @Override
     public String countStep(Integer count) {
         String result = String.valueOf(count);
         mTVCounter.setText(result);
@@ -186,49 +180,6 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
                         wd.weather.get(0).icon))
                 .into(imageView);
     }
-
-
-//    private class WeatherTask extends AsyncTask<Map<String, Float>, Void, WeatherData> {
-//        WeatherData result = null;
-//
-//        @Override
-//        protected WeatherData doInBackground(Map<String, Float>... params) {
-//            Map<String, Float> coord = params[0];
-//            Call<WeatherData> call = WeatherService.getActuallWeatherData(
-//                    coord.get("lon"), coord.get("lat")
-//            );
-//            call.enqueue(new Callback<WeatherData>() {
-//                @Override
-//                public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
-//                    result = response.body();
-//                    SumStep actuallStep = null;
-//                    try {
-//                        actuallStep = SumStepsDaoService.getInstance().setActuallWeather(result);
-//                        //TODO do zmiany
-//                        ((SensorStepListener)mSensorListener).setCounter(actuallStep.getSteps());
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    updateView(response.body(), String.valueOf(actuallStep.getSteps()));
-//                }
-//
-//                @Override
-//                public void onFailure(Call<WeatherData> call, Throwable t) {
-//
-//                }
-//            });
-//
-//            return result;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(WeatherData weatherData) {
-//            super.onPostExecute(weatherData);
-//            if (weatherData == null) return;
-//            //updateView(weatherData);
-//
-//        }
-//    }
 
 }
 

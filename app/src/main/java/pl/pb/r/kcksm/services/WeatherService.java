@@ -21,9 +21,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WeatherService extends IntentService {
 
-    public static final String ACTION_UPDATE_WEATHER = "ACTION_UPDATE_LOCALIZATION";
+    public static final String ACTION_UPDATE_LOCALIZATION_WEATHER = "ACTION_UPDATE_LOCALIZATION_WEATHER";
+    public static final String ACTION_FORECAST_WEATHER = "ACTION_FORECAST_WEATHER";
     public static final String EXTRA_LONGITUDE = "EXTRA_LONGITUDE";
     public static final String EXTRA_LATITUDE = "EXTRA_LATITUDE";
+    public static final String EXTRA_CITY = "EXTRA_CITY";
 
     public final static String BASE_URL = "http://api.openweathermap.org/data/2.5/";
     public static String IMG_URL = "http://openweathermap.org/img/w/%s.png";
@@ -55,20 +57,20 @@ public class WeatherService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d("WeatherService", "onHandleIntent()");
         if (intent == null) return;
-        float lon = intent.getFloatExtra(EXTRA_LONGITUDE, 22.45521f);
-        float lat = intent.getFloatExtra(EXTRA_LATITUDE, 53.647155f);
-
-        coordinate.put("lon", lon);
-        coordinate.put("lat", lat);
-        getWeather();
+        switch (intent.getAction()) {
+            case ACTION_UPDATE_LOCALIZATION_WEATHER:
+                float lon = intent.getFloatExtra(EXTRA_LONGITUDE, 22.45521f);
+                float lat = intent.getFloatExtra(EXTRA_LATITUDE, 53.647155f);
+                coordinate.put("lon", lon);
+                coordinate.put("lat", lat);
+                getWeather();
+                break;
+            case ACTION_FORECAST_WEATHER:
+                String city = intent.getStringExtra(EXTRA_CITY);
+                getForecastData(city);
+                break;
+        }
     }
-
-
-//    @Override
-//    public int onStartCommand(Intent intent, int flags, int startId) {
-//        Log.d("WeatherService","onStartCommand()");
-//        return START_NOT_STICKY;
-//    }
 
     private void getWeather() {
         Call<WeatherData> call = getOpenWeatherApiInstance().getWeatherCity(coordinate.get("lat"),
@@ -78,8 +80,7 @@ public class WeatherService extends IntentService {
         call.enqueue(new Callback<WeatherData>() {
             @Override
             public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
-                weather = response.body();
-                EventBus.getDefault().post(weather);
+                EventBus.getDefault().post(response.body());
             }
 
             @Override
@@ -87,28 +88,24 @@ public class WeatherService extends IntentService {
                 t.printStackTrace();
             }
         });
-        Log.d("WService getWeather", "weather");
-        System.out.println(weather);
     }
 
-    //TMP zastąpić aby serwis za to odpowiadał a nie jego statyczna metoda
-    //Pogoda OBECNA
-    public static Call<WeatherData> getActuallWeatherData(float lon, float lat) {
-        Call<WeatherData> call = getOpenWeatherApiInstance().getWeatherCity(lat,
-                lon,
-                "pl",
-                API_KEY);
-        return call;
-    }
-
-    //TMP możliwe, że przenieść nawet do oddzielnego serwisu
-    //Pogoda KILKU DNIOWA
-    public static Call<ForecastData> getForecastData(String city) {
+    public void getForecastData(String city) {
         Call<ForecastData> call = getOpenWeatherApiInstance().getForecastCity(
                 city,
                 "pl",
                 API_KEY);
-        return call;
+        call.enqueue(new Callback<ForecastData>() {
+            @Override
+            public void onResponse(Call<ForecastData> call, Response<ForecastData> response) {
+                EventBus.getDefault().post(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ForecastData> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     private static Retrofit getRetrofitInstance() {
