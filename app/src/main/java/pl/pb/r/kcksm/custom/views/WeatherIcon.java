@@ -5,8 +5,6 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import pl.pb.r.kcksm.managers.FontCache;
-
 /**
  * Created by Radosław Naruszewicz on 2016-12-05.
  */

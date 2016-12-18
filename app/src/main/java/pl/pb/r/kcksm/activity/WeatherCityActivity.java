@@ -1,7 +1,6 @@
 package pl.pb.r.kcksm.activity;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,17 +17,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import pl.pb.r.kcksm.R;
 import pl.pb.r.kcksm.adapters.ForecastPagerAdapter;
 import pl.pb.r.kcksm.model.ForecastData;
 import pl.pb.r.kcksm.model.weather.Day;
 import pl.pb.r.kcksm.services.WeatherService;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class WeatherCityActivity extends AppCompatActivity {
 

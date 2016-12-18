@@ -30,7 +30,6 @@ public class WeatherService extends IntentService {
     public final static String BASE_URL = "http://api.openweathermap.org/data/2.5/";
     public static String IMG_URL = "http://openweathermap.org/img/w/%s.png";
     public final static String API_KEY = "e64ed702a71529f3da697c8c68941ff8";
-    public final static String METRIC = "metric";
 
     private static Retrofit retrofit = getRetrofitInstance();
     private static OpenWeatherMapApi weatherApi = getOpenWeatherApiInstance();

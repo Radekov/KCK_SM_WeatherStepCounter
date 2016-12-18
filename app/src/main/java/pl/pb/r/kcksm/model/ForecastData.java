@@ -7,13 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.pb.r.kcksm.model.weather.City;
-import pl.pb.r.kcksm.model.weather.Clouds;
 import pl.pb.r.kcksm.model.weather.Day;
-import pl.pb.r.kcksm.model.weather.Main;
-import pl.pb.r.kcksm.model.weather.Rain;
-import pl.pb.r.kcksm.model.weather.Temp;
-import pl.pb.r.kcksm.model.weather.Weather;
-import pl.pb.r.kcksm.model.weather.Wind;
 
 /**
  * Created by Radosław Naruszewicz on 2016-12-01.
