@@ -3,5 +3,9 @@
     <string name="stats">Stats</string>
     <string name="sum_steps">Sum steps</string>
     <string name="search_forecast_hint">City</string>
+    <string name="counter_steps">Counter steps</string>
+    <string name="yes">Nie</string>
+    <string name="no">No</string>
+    <string name="alert_description">Are you sure you want to delete your stats?</string>
 
 </resources>

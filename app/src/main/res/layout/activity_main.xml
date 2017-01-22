@@ -18,79 +18,89 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar">
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
 
-        <TextView
-            android:id="@+id/tv_city"
+        <LinearLayout
+            android:id="@+id/step_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="CITY" />
+            android:orientation="vertical"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true">
 
-        <ImageView
-            android:id="@+id/imageView"
+            <TextView
+                android:id="@+id/tv_counter"
+                android:layout_width="match_parent"
+                android:layout_height="124dp"
+                android:gravity="center"
+                android:text="@string/default_steps"
+                android:textSize="50dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/counter_steps" />
+        </LinearLayout>
+
+        <pl.pb.r.kcksm.custom.views.WeatherIcon
+            android:id="@+id/imgDescr"
+            android:textSize="120dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_city"
-            android:layout_centerHorizontal="true"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:src="@android:drawable/ic_menu_search" />
+            android:text="@string/default_ico"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_description"
+            android:foregroundGravity="center"
+            android:layout_above="@+id/step_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="13dp" />
+
+        <pl.pb.r.kcksm.custom.views.WeatherIcon
+            android:id="@+id/tv_humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_humidity"
+            android:layout_alignBottom="@+id/imgDescr"
+            android:layout_alignParentEnd="true" />
+
+        <pl.pb.r.kcksm.custom.views.WeatherIcon
+            android:id="@+id/tv_pressure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_pressure"
+            android:layout_above="@+id/tv_humidity"
+            android:layout_alignParentEnd="true" />
 
         <TextView
 
             android:id="@+id/tv_temperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/tv_city"
-            android:text="##.##&#xb0;" />
+            android:text="@string/default_temperature"
+            android:layout_alignBottom="@+id/imgDescr"
+            android:layout_alignParentStart="true" />
 
         <TextView
-            android:id="@+id/tv_pressure"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_city"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/tv_city"
-            android:text="Pressure" />
+            android:gravity="center"
+            android:text="@string/default_city"
+            android:layout_marginBottom="27dp"
+            android:layout_above="@+id/tv_pressure"
+            android:layout_alignParentStart="true" />
 
-        <TextView
-            android:id="@+id/tv_humidity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/tv_pressure"
-            android:text="Humidity" />
-
-        <TextView
-            android:id="@+id/tv_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/imageView"
-            android:layout_centerHorizontal="true"
-            android:text="Description" />
     </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tv_counter"
-            android:layout_width="match_parent"
-            android:layout_height="124dp"
-            android:gravity="center"
-            android:text="# ###"
-            android:textSize="50dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Liczba kroków" />
-    </LinearLayout>
 
 
 </RelativeLayout>

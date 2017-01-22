@@ -11,36 +11,34 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/forecastToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:theme="?attr/actionBarTheme"
+        android:minHeight="?attr/actionBarSize">
 
         <EditText
             android:id="@+id/searchForecastCity"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/search_forecast_hint" />
 
-        <ImageButton
-            android:onClick="searchForecast"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:foregroundGravity="right"
-            android:src="@android:drawable/ic_menu_search"
-            />
     </android.support.v7.widget.Toolbar>
 
     <TextView
         android:id="@+id/forecastCity"
         android:layout_width="wrap_content"
-        android:layout_gravity="center"
         android:layout_height="wrap_content"
-        android:text="CITY, COUNTRY" />
+        android:layout_gravity="center"
+        android:text="@string/default_city" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/forecastViewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
 
-    <!--3# Fragment-->
-    <!--include aktualna liczba kroków-->
+        <android.support.v4.view.PagerTitleStrip
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top" />
+    </android.support.v4.view.ViewPager>
 
 </LinearLayout>

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import pl.pb.r.kcksm.Constans;
 import pl.pb.r.kcksm.R;
 import pl.pb.r.kcksm.model.SumStep;
 import pl.pb.r.kcksm.services.WeatherService;
@@ -28,13 +29,13 @@ public class SumStepAdapter extends RecyclerView.Adapter<SumStepAdapter.SumStepV
     private List<SumStep> dataset;
 
     static class SumStepViewHolder extends RecyclerView.ViewHolder{
-        ImageView ivPictureWeather;
+        TextView ivPictureWeather;
         TextView tvDescribeWeather;
         TextView tvSumStepWeather;
 
         public SumStepViewHolder(View itemView) {
             super(itemView);
-            ivPictureWeather = (ImageView)itemView.findViewById(R.id.iv_row_image);
+            ivPictureWeather = (TextView)itemView.findViewById(R.id.iv_row_image);
             tvDescribeWeather = (TextView)itemView.findViewById(R.id.tv_row_descritpion);
             tvSumStepWeather = (TextView)itemView.findViewById(R.id.tv_row_step);
         }
@@ -56,12 +57,13 @@ public class SumStepAdapter extends RecyclerView.Adapter<SumStepAdapter.SumStepV
         SumStep sumStep = dataset.get(position);
         holder.tvDescribeWeather.setText(sumStep.getWeather());
         holder.tvSumStepWeather.setText(Integer.toString(sumStep.getSteps()));
-        Picasso.with(holder.ivPictureWeather.getContext())
-                .load(String.format(
-                        Locale.US,
-                        WeatherService.IMG_URL,
-                        sumStep.getIco()))
-                .into(holder.ivPictureWeather);
+        holder.ivPictureWeather.setText(Constans.getWeatherIco((int)(long)sumStep.getId()));
+//        Picasso.with(holder.ivPictureWeather.getContext())
+//                .load(String.format(
+//                        Locale.US,
+//                        WeatherService.IMG_URL,
+//                        sumStep.getIco()))
+//                .into(holder.ivPictureWeather);
     }
 
     @Override

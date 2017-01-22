@@ -55,10 +55,11 @@ public class WeatherCityActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.forecastToolbar);
         setSupportActionBar(mToolbar);
         //Do wyświetlenia obrazka cofnięcia do poprzedniego Activity @R
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         //TODO Zmienić obrazek na strzałkę @R
-        mToolbar.setNavigationIcon(android.R.drawable.ic_menu_week);
+//        mToolbar.setNavigationIcon(android.R.drawable.ic_menu_week);
     }
 
     @Override
@@ -73,6 +74,9 @@ public class WeatherCityActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.search:
+                searchForecast();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -96,7 +100,7 @@ public class WeatherCityActivity extends AppCompatActivity {
         startService(i);
     }
 
-    public void searchForecast(View v) {
+    public void searchForecast() {
         String city = mEditText.getText().toString();
         Log.d("searchForecast", city);
         if (city.length() == 0) return;

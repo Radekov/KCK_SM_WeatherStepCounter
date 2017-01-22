@@ -25,12 +25,12 @@ public class SensorStepListener implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     public void addListener(CountStepListener toAdd){
         listeners.add(toAdd);
     }
+    public void removeListener(CountStepListener toRemove){listeners.remove(toRemove);}
 
     public Integer getCounter() {
         return counter;

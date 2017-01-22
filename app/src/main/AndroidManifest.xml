@@ -14,7 +14,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:theme="@style/AppTheme">
 
         <!-- android:theme="@style/AppTheme" -->
         <activity
@@ -44,7 +44,12 @@ ATTENTION: This was auto-generated to add Google Play services to your project f
             android:exported="true" />
 
         <activity android:name=".activity.StatsActivity" />
-        <activity android:name=".activity.WeatherCityActivity"></activity>
+        <activity android:name=".activity.WeatherCityActivity" />
+
+        <service
+            android:name=".services.StepCounterService"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>

@@ -2,7 +2,6 @@ package pl.pb.r.kcksm.services;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.IntentService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -20,8 +19,8 @@ public class GPSLocationService extends Service {
     private static final String TAG = "LOCATION_GPS";
 
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 10f;
+    private static final int LOCATION_INTERVAL = 5000;
+    private static final float LOCATION_DISTANCE = 0.0f;
 
 //    public GPSLocationService() {
 //        super("GPSLocalizationService");

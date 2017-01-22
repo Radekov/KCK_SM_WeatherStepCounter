@@ -79,7 +79,8 @@ public class WeatherService extends IntentService {
         call.enqueue(new Callback<WeatherData>() {
             @Override
             public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
-                EventBus.getDefault().post(response.body());
+                weather = response.body();
+                EventBus.getDefault().post(weather);
             }
 
             @Override
@@ -94,9 +95,11 @@ public class WeatherService extends IntentService {
                 city,
                 "pl",
                 API_KEY);
+        System.out.println(call.request().url().toString());
         call.enqueue(new Callback<ForecastData>() {
             @Override
             public void onResponse(Call<ForecastData> call, Response<ForecastData> response) {
+                System.out.println(response.body().toString());
                 EventBus.getDefault().post(response.body());
             }
 

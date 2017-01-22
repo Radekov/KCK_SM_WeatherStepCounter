@@ -2,12 +2,14 @@ package pl.pb.r.kcksm;
 
 import android.app.Application;
 import android.content.Intent;
+import android.view.View;
 
 import org.greenrobot.greendao.database.Database;
 
 import pl.pb.r.kcksm.model.DaoMaster;
 import pl.pb.r.kcksm.model.DaoSession;
 import pl.pb.r.kcksm.services.GPSLocationService;
+import pl.pb.r.kcksm.services.StepCounterService;
 import pl.pb.r.kcksm.services.SumStepsDaoService;
 
 /**
@@ -27,10 +29,14 @@ public class App extends Application {
         daoSession = new DaoMaster(db).newSession();
         SumStepsDaoService.newInstance(this);
         startService(new Intent(this, GPSLocationService.class));
+        startService(new Intent(this, StepCounterService.class));
     }
 
     public DaoSession getDaoSession() {
         return daoSession;
+    }
+    public void stopService(Class c){
+        stopService(new Intent(getBaseContext(), c));
     }
 
 

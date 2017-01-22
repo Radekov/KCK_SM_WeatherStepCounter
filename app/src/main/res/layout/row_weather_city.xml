@@ -1,105 +1,125 @@
-<?xml version="1.0" encoding="utf-8"?><!--TODO przenieść do fragmentu-->
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/forecastDay"
+        android:id="@+id/forecastDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DT -> DAY"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="WEATHER.DESCRIPTION"
+        android:textSize="23sp" />
 
-    <TextView
-        android:id="@+id/forecastPressure"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PRESSURE hPa"
-        android:layout_below="@+id/forecastDay"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:id="@+id/forecastHumidity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="HUMIDITY%"
-        android:layout_below="@+id/forecastPressure"
-        android:layout_alignParentStart="true" />
-
-    <TextView
+    <pl.pb.r.kcksm.custom.views.WeatherIcon
         android:id="@+id/forecastWindSpeed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="40dp"
         android:text="WIND SPEED meter/sec"
-        android:layout_below="@+id/forecastDay"
-        android:layout_alignParentEnd="true" />
+        android:textSize="25sp" />
 
-    <TextView
+    <pl.pb.r.kcksm.custom.views.WeatherIcon
         android:id="@+id/forecastWindDeg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="WIND DEG"
+        android:layout_alignParentEnd="true"
         android:layout_below="@+id/forecastWindSpeed"
-        android:layout_alignStart="@+id/forecastWindSpeed" />
+        android:text="&#xF0B1;"
+        android:textSize="25sp" />
 
-    <TextView
+    <pl.pb.r.kcksm.custom.views.WeatherIcon
         android:id="@+id/forecastClouds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CLOUDS %"
-        android:layout_below="@+id/forecastHumidity"
-        android:layout_alignParentStart="true" />
+        android:layout_alignBottom="@+id/forecastWindDeg"
+        android:layout_alignParentStart="true"
+        android:textSize="25sp"
+        android:text="CLOUDS &#xf041;%" />
 
-    <TextView
+    <pl.pb.r.kcksm.custom.views.WeatherIcon
+        android:id="@+id/forecastPressure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/forecastWindSpeed"
+        android:layout_alignParentStart="true"
+        android:textSize="25sp"
+        android:text="PRESSURE hPa&#xf079;" />
+
+    <pl.pb.r.kcksm.custom.views.WeatherIcon
+        android:id="@+id/forecastHumidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/forecastClouds"
+        android:textSize="25sp"
+        android:text="@string/default_humidity" />
+
+    <pl.pb.r.kcksm.custom.views.WeatherIcon
         android:id="@+id/forecastIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="WEATHER.ICON"
-        android:layout_below="@+id/forecastClouds"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/forecastDescription"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="46dp"
+        android:text="@string/default_ico"
+        android:textAlignment="center"
+        android:textSize="70dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@+id/forecastClouds"
-        android:layout_alignParentStart="true"
-        xmlns:foo="http://schemas.android.com/apk/res/com.example"
-        android:layout_marginTop="121dp">
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
         <!--FIXME-->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_margin="10dp"
             android:orientation="horizontal">
+
             <pl.pb.r.kcksm.custom.views.WeatherIcon
                 android:id="@+id/forecastIconMor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="25dp"
                 android:text="&#xf046;" />
+
             <TextView
                 android:id="@+id/forecastTempMor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="##.##&#xb0;C" />
-
-
+                android:textSize="25dp"
+                android:text="##.##&#xb0;C"
+                android:layout_marginLeft="10dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_margin="10dp"
             android:orientation="horizontal">
+
             <pl.pb.r.kcksm.custom.views.WeatherIcon
                 android:id="@+id/forecastIconDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="&#xF00D;" />
+                android:text="&#xF00D;"
+                android:textSize="25dp" />
+
             <TextView
                 android:id="@+id/forecastTempDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="##.##&#xb0;C" />
+                android:text="##.##&#xb0;C"
+                android:textSize="25dp"
+                android:layout_marginLeft="10dp" />
 
 
         </LinearLayout>
@@ -107,17 +127,23 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_margin="10dp"
             android:orientation="horizontal">
+
             <pl.pb.r.kcksm.custom.views.WeatherIcon
                 android:id="@+id/forecastIconEve"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="&#xf047;" />
+                android:text="&#xf047;"
+                android:textSize="25dp" />
+
             <TextView
                 android:id="@+id/forecastTempEve"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="##.##&#xb0;C" />
+                android:text="##.##&#xb0;C"
+                android:textSize="25dp"
+                android:layout_marginLeft="10dp" />
 
 
         </LinearLayout>
@@ -125,30 +151,28 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_margin="10dp"
             android:orientation="horizontal">
+
             <pl.pb.r.kcksm.custom.views.WeatherIcon
                 android:id="@+id/forecastIconNig"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="&#xF095;" />
+                android:text="&#xF095;"
+                android:textSize="25dp" />
+
             <TextView
                 android:id="@+id/forecastTempNig"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="##.##&#xb0;C" />
+                android:text="##.##&#xb0;C"
+                android:textSize="25dp"
+                android:layout_marginLeft="10dp" />
 
 
         </LinearLayout>
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/forecastDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="WEATHER.DESCRIPTION"
-        android:layout_below="@+id/forecastIcon"
-        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

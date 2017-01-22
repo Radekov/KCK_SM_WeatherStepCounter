@@ -1,15 +1,17 @@
 package pl.pb.r.kcksm.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -21,19 +23,17 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Locale;
 
 import pl.pb.r.kcksm.App;
+import pl.pb.r.kcksm.Constans;
 import pl.pb.r.kcksm.R;
-import pl.pb.r.kcksm.listeners.CountStepListener;
-import pl.pb.r.kcksm.listeners.SensorStepListener;
-import pl.pb.r.kcksm.model.DaoSession;
-import pl.pb.r.kcksm.model.SumStepDao;
 import pl.pb.r.kcksm.model.WeatherData;
-import pl.pb.r.kcksm.services.SumStepsDaoService;
+import pl.pb.r.kcksm.services.GPSLocationService;
+import pl.pb.r.kcksm.services.StepCounterService;
 import pl.pb.r.kcksm.services.WeatherService;
 
-public class MainActivity extends AppCompatActivity implements CountStepListener {
+public class MainActivity extends AppCompatActivity {
 
-    private SensorManager mSensorManager;
-    private Sensor mSensorStepCounter;
+    public static final String EXTRA_STEP = "EXTRA_STEP";
+    public static final String ACTION_UPDATE_STEP = "ACTION_UPDATE_STEP";
 
     private TextView mTVCounter;
     private TextView city;
@@ -41,45 +41,18 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
     private TextView pressure;
     private TextView humidity;
     private TextView description;
-    private ImageView imageView;
-
-    private SensorEventListener mSensorListener;
-
-    //    private WeatherTask task;
-    private DaoSession daoSession;
-    private SumStepDao sumStepDao;
+    private TextView imgDescr;
 
     protected Toolbar toolbar;
-
-    public static final String EXTRA_WEATHER = "EXTRA_WEATHER";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        daoSession = ((App) getApplication()).getDaoSession();
-
-        //TODO: przenieść do kontekstu aplikacji, wywalić by działało w tle - Service
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        /*https://developer.android.com/guide/topics/sensors/sensors_motion.html#sensors-motion-stepcounter
-        * Większa precyzja i opóźnienie też większe
-        * */
-        //mSensorStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
-        mSensorStepCounter = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
-        createmSensorListener();
-
-
-        //TODO Przenieść do fragmentu
         setContentView(R.layout.activity_main);
         setToolbar();
         setUpViews();
-
-//        Map<String, Float> c = new HashMap<>();
-//        c.put("lon", 22.455217f);
-//        c.put("lat", 53.6471559f);
-//        task = new WeatherTask();
-//        task.execute(c);
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mStepReceiver, new IntentFilter(ACTION_UPDATE_STEP));
     }
 
     protected void setUpViews() {
@@ -89,7 +62,18 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
         pressure = (TextView) findViewById(R.id.tv_pressure);
         humidity = (TextView) findViewById(R.id.tv_humidity);
         description = (TextView) findViewById(R.id.tv_description);
-        imageView = (ImageView) findViewById(R.id.imageView);
+        imgDescr = (TextView) findViewById(R.id.imgDescr);
+        fillViews();
+    }
+    protected void fillViews(){
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        temperature.setText(sharedPref.getString(getString(R.string.saved_last_temp), getString(R.string.default_temperature)));
+        city.setText(sharedPref.getString(getString(R.string.saved_last_city), getString(R.string.default_city)));
+        imgDescr.setText(sharedPref.getString(getString(R.string.saved_last_ico), getString(R.string.default_ico)));
+        description.setText(sharedPref.getString(getString(R.string.saved_last_description), getString(R.string.default_description)));
+        pressure.setText(sharedPref.getString(getString(R.string.saved_last_pressure), getString(R.string.default_pressure)));
+        humidity.setText(sharedPref.getString(getString(R.string.saved_last_humidity), getString(R.string.default_humidity)));
+        mTVCounter.setText(sharedPref.getString(getString(R.string.saved_last_steps), getString(R.string.default_steps)));
     }
 
     protected void setToolbar() {
@@ -107,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.stats:
+                StepCounterService.updateTable();
                 Intent intent = new Intent(this, StatsActivity.class);
                 startActivity(intent);
                 break;
@@ -117,16 +102,9 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
                 intent.putExtra(WeatherCityActivity.EXTRA_CITY, extra);
                 startActivity(intent);
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    private void createmSensorListener() {
-        if (mSensorListener == null) {
-            mSensorListener = new SensorStepListener();
-            ((SensorStepListener) mSensorListener).addListener(this);
-        }
-    }
 
     @Override
     protected void onStart() {
@@ -135,49 +113,60 @@ public class MainActivity extends AppCompatActivity implements CountStepListener
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mSensorManager.registerListener(mSensorListener, mSensorStepCounter, SensorManager.SENSOR_DELAY_UI);
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+        saveLastWeather();
+    }
+
+    protected void saveLastWeather(){
+        Log.d("Main ico weather", imgDescr.getText().toString());
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.saved_last_temp), temperature.getText().toString());
+        editor.putString(getString(R.string.saved_last_city), city.getText().toString());
+        editor.putString(getString(R.string.saved_last_ico), imgDescr.getText().toString());
+        editor.putString(getString(R.string.saved_last_description),description.getText().toString());
+        editor.putString(getString(R.string.saved_last_pressure),pressure.getText().toString());
+        editor.putString(getString(R.string.saved_last_humidity),humidity.getText().toString());
+        editor.putString(getString(R.string.saved_last_steps),mTVCounter.getText().toString());
+        editor.apply();
     }
 
     @Override
-    public String countStep(Integer count) {
-        String result = String.valueOf(count);
-        mTVCounter.setText(result);
-
-        try {
-            //TODO do zmiany
-            SumStepsDaoService.getInstance().updateSumStep(1);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mStepReceiver);
+        ((App)getApplication()).stopService(GPSLocationService.class);
+        ((App)getApplication()).stopService(StepCounterService.class);
+        super.onDestroy();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void updateWeatherView(WeatherData wd) {
-
+        Log.d("Update weather:",wd.id.toString() + " " + wd.weather.get(0).id);
         city.setText(wd.name + "," + wd.sys.country);
         description.setText(wd.weather.get(0).description);
-        temperature.setText(String.format(Locale.US,"%.2f C", wd.main.temp));
-        pressure.setText(String.format(Locale.US,"%.2f ", wd.main.pressure));
-        humidity.setText(String.format(Locale.US,"%d %%", wd.main.humidity));
+        temperature.setText(String.format(Locale.US, "%.2f " + Constans.DEGGRE_C, wd.main.temp));
+        pressure.setText(String.format(Locale.US, "%.2f " + Constans.PRESSURE, wd.main.pressure));
+        humidity.setText(String.format(Locale.US, "%d" + Constans.HUMIDITY, wd.main.humidity));
 
-
-        Picasso.with(MainActivity.this)
-                .load(String.format(
-                        Locale.US,
-                        WeatherService.IMG_URL,
-                        wd.weather.get(0).icon))
-                .into(imageView);
+        imgDescr.setText(Constans.getWeatherIco(wd.weather.get(0).id));
+//        Picasso.with(MainActivity.this)
+//                .load(String.format(
+//                        Locale.US,
+//                        WeatherService.IMG_URL,
+//                        wd.weather.get(0).icon))
+//                .into(imgDescr);
     }
 
+    private BroadcastReceiver mStepReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("BroadcastReceiver","onReceive: "+ intent.getAction());
+            switch (intent.getAction()) {
+                case ACTION_UPDATE_STEP:
+                    mTVCounter.setText(intent.getStringExtra(EXTRA_STEP));
+            }
+        }
+    };
 }
-
-//TODO Zapisać tekst licznika do Bundle

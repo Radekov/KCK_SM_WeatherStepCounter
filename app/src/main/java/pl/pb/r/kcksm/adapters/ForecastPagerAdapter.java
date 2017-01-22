@@ -3,6 +3,7 @@ package pl.pb.r.kcksm.adapters;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import pl.pb.r.kcksm.Constans;
 import pl.pb.r.kcksm.R;
 import pl.pb.r.kcksm.model.weather.Day;
 
@@ -26,12 +28,10 @@ public class ForecastPagerAdapter extends PagerAdapter {
 
     private Typeface weatherFont;
 
-    private static String deggreC = (char) 0x00B0 + "C";
-
     List<Day> dayWeathers;
     private Context mContext;
 
-    private TextView mDay;
+    //private TextView mDay;
     private TextView mPressure;
     private TextView mHumidity;
     private TextView mDescription;
@@ -69,14 +69,17 @@ public class ForecastPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        Day day = dayWeathers.get(position);
         LayoutInflater inflater = LayoutInflater.from(mContext);
         ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.row_weather_city, container, false);
         setUpViews(layout);
         fillViews(dayWeathers.get(position));
         container.addView(layout);
-//        return super.instantiateItem(container, position);
         return layout;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return setTime(dayWeathers.get(position).dt);
     }
 
     @Override
@@ -85,7 +88,7 @@ public class ForecastPagerAdapter extends PagerAdapter {
     }
 
     private void setUpViews(ViewGroup v){
-        mDay = (TextView)v.findViewById(R.id.forecastDay);
+        //mDay = (TextView)v.findViewById(R.id.forecastDay);
         mPressure = (TextView)v.findViewById(R.id.forecastPressure);
         mHumidity = (TextView)v.findViewById(R.id.forecastHumidity);
         mDescription = (TextView)v.findViewById(R.id.forecastDescription);
@@ -104,22 +107,21 @@ public class ForecastPagerAdapter extends PagerAdapter {
 //        mIconNig = (TextView)v.findViewById(R.id.forecastIconNig);
     }
 
-    //TODO Multi language
     private void fillViews(Day day){
-        mDay.setText(setTime(day.dt));
-        mPressure.setText(day.pressure + "hPa");
-        mHumidity.setText(day.humidity+"%");
+        mPressure.setText(day.pressure + Constans.PRESSURE);
+        mHumidity.setText(day.humidity + Constans.HUMIDITY);
         mDescription.setText(day.weather.get(0).description);
-        //
-        mIcon.setText(day.weather.get(0).icon);
-        mWindSpeed.setText(day.speed +"m/s");
-        mWindDeg.setText(day.deg+(char) 0x00B0+"");
+
+        mIcon.setText(Constans.getWeatherIco(day.weather.get(0).id));
+        Log.d("Ico:",day.weather.get(0).id+"");
+        mWindSpeed.setText(day.speed +Constans.WIND_SPEED);
+        mWindDeg.setRotation(day.deg*1.0f);
         mClouds.setText(day.clouds+"%");
 
-        mTempMor.setText(day.temp.morn+deggreC);
-        mTempDay.setText(day.temp.day+deggreC);
-        mTempEve.setText(day.temp.eve+deggreC);
-        mTempNig.setText(day.temp.night+deggreC);
+        mTempMor.setText(day.temp.morn+Constans.DEGGRE_C);
+        mTempDay.setText(day.temp.day+Constans.DEGGRE_C);
+        mTempEve.setText(day.temp.eve+Constans.DEGGRE_C);
+        mTempNig.setText(day.temp.night+Constans.DEGGRE_C);
     }
 
     private String setTime(long time){

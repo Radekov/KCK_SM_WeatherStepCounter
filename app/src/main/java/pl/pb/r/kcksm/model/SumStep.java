@@ -10,7 +10,6 @@ import org.greenrobot.greendao.annotation.Unique;
  * Created by Radosław Naruszewicz on 2016-11-27.
  */
 //https://openweathermap.org/weather-conditions
-    //TODO dla tych id zrobić wielkiego switcha?
 @Entity(
         generateConstructors = true,
         generateGettersSetters = true
@@ -24,21 +23,15 @@ public class SumStep {
     private String weather;
 
     @NotNull
-    @Unique
-    private String ico;
-
-    @NotNull
     private Integer steps;
 
     public SumStep() {
     }
 
-    @Generated(hash = 484290474)
-    public SumStep(Long id, @NotNull String weather, @NotNull String ico,
-            @NotNull Integer steps) {
+    @Generated(hash = 291230068)
+    public SumStep(Long id, @NotNull String weather, @NotNull Integer steps) {
         this.id = id;
         this.weather = weather;
-        this.ico = ico;
         this.steps = steps;
     }
 
@@ -69,13 +62,5 @@ public class SumStep {
     @Override
     public String toString() {
         return weather + " " + steps.toString();
-    }
-
-    public String getIco() {
-        return this.ico;
-    }
-
-    public void setIco(String ico) {
-        this.ico = ico;
     }
 }

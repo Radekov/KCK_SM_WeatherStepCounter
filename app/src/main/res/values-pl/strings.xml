@@ -3,4 +3,8 @@
     <string name="search_forecast_hint">Wpisz miasto</string>
     <string name="stats">Statystyki</string>
     <string name="sum_steps">Suma kroków</string>
+    <string name="counter_steps">Liczba kroków</string>
+    <string name="yes">Tak</string>
+    <string name="no">Nie</string>
+    <string name="alert_description">Czy jesteś pewien, że chcesz usunąć statystyki?</string>
 </resources>

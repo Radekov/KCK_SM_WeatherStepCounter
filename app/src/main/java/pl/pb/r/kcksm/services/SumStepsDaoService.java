@@ -16,24 +16,26 @@ public class SumStepsDaoService {
     private static SumStepsDaoService INSTANCE;
     private Weather actuallWeather = null;
 
-    private SumStepsDaoService(App app){
-        sumStepDao =  app.getDaoSession().getSumStepDao();
+    private SumStepsDaoService(App app) {
+        sumStepDao = app.getDaoSession().getSumStepDao();
     }
 
-    public static SumStepsDaoService newInstance(App app){
+    public static SumStepsDaoService newInstance(App app) {
         INSTANCE = new SumStepsDaoService(app);
         return INSTANCE;
     }
-    public static SumStepsDaoService getInstance() throws Exception{
-        if(INSTANCE == null)
-            throw new Exception();
+
+    public static SumStepsDaoService getInstance() {
+        if (INSTANCE == null)
+            return null;
         return INSTANCE;
     }
 
-    public String sumAllSteps(){
+    public String sumAllSteps() {
         Integer result = 0;
-        for (SumStep s:sumStepDao.loadAll())
-            result+=s.getSteps();
+        for (SumStep s : sumStepDao.loadAll())
+            result += s.getSteps();
+        //FIXED
 //        Query query = sumStepDao.queryBuilder().where(
 //                new WhereCondition.StringCondition(
 //                        "(SELECT SUM(steps) FROM SUM_STEP)")
@@ -42,44 +44,41 @@ public class SumStepsDaoService {
     }
 
     public SumStep setActuallWeather(WeatherData wd) throws Exception {
-        if(wd == null)
+        if (wd == null)
             throw new Exception();
-        return findAndUpdateSumStep(wd.weather.get(0),0);
+        return findAndUpdateSumStep(wd.weather.get(0), 0);
     }
 
-    public SumStep updateSumStep(Integer countSteps){
-        return findAndUpdateSumStep(actuallWeather,countSteps);
+    public SumStep updateSumStep(Integer countSteps) {
+        return findAndUpdateSumStep(actuallWeather, countSteps);
     }
 
-    public SumStep findAndUpdateSumStep(Weather w, Integer countSteps){
+    public SumStep findAndUpdateSumStep(Weather w, Integer countSteps) {
         actuallWeather = w;
+        if(actuallWeather == null) return null;
+        Long id = new Long(w.id);
         String description = actuallWeather.description;
-        String icon = actuallWeather.icon;
-
         SumStep result = null;
-
-        try{
+        try {
             result = sumStepDao.queryBuilder()
-                    .where(
-                            SumStepDao.Properties.Weather.eq(
-                                    description)
-                    )
+                    .where(SumStepDao.Properties.Id.eq(id))
                     .unique();
+        } catch (Exception ex) {
         }
-        catch (Exception ex){
-        }
-        if(result == null){
+        if (result == null) {
             result = new SumStep();
+            result.setId(id);
             result.setWeather(description);
-            result.setIco(icon);
             result.setSteps(countSteps);
             sumStepDao.insert(result);
-        }
-        else{
-            result.setSteps(result.getSteps()+countSteps);
+        } else {
+            result.setSteps(result.getSteps() + countSteps);
             sumStepDao.update(result);
         }
         return result;
     }
 
+    public void deleteAll(){
+        sumStepDao.deleteAll();
+    }
 }
